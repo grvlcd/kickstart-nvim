@@ -107,9 +107,11 @@ vim.cmd 'set tabstop=4'
 vim.cmd 'set softtabstop=2'
 vim.cmd 'set shiftwidth=2'
 
+-- Move selected line / block of text in visual mode
+vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv", { noremap = true, silent = true })
+vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv", { noremap = true, silent = true })
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -262,6 +264,18 @@ require('lazy').setup({
         topdelete = { text = '‾' },
         changedelete = { text = '~' },
       },
+      current_line_blame = true,
+      current_line_blame_opts = {
+        virt_text = true,
+        virt_text_pos = 'eol',
+        delay = 1000,
+        ignore_whitespace = false,
+        virt_text_priority = 100,
+      },
+      current_line_blame_formatter = '<author>, <author_time:%Y-%m-%d> - <summary>',
+      current_line_blame_formatter_opts = {
+        relative_time = false,
+      },
     },
   },
   {
@@ -269,10 +283,8 @@ require('lazy').setup({
     version = '*',
     config = function()
       require('toggleterm').setup {
-        open_mapping = [[<c-\>]],
+        open_mapping = [[<C-\>]],
       }
-      vim.cmd [[let &shell = '"C:/Program Files/Git/bin/bash.exe"']]
-      vim.cmd [[let &shellcmdflag = '-s']]
     end,
   },
   {
@@ -568,7 +580,7 @@ require('lazy').setup({
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
         -- clangd = {},
-        -- gopls = {},
+        gopls = {},
         -- pyright = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
@@ -660,7 +672,7 @@ require('lazy').setup({
         --
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.
-        -- javascript = { { "prettierd", "prettier" } },
+        javascript = { { 'prettierd', 'prettier' } },
       },
     },
   },
@@ -694,7 +706,7 @@ require('lazy').setup({
         },
       },
       'saadparwaiz1/cmp_luasnip',
-
+      'mlaursen/vim-react-snippets',
       -- Adds other completion capabilities.
       --  nvim-cmp does not ship with all sources by default. They are split
       --  into multiple repos for maintenance purposes.
@@ -769,30 +781,50 @@ require('lazy').setup({
       }
     end,
   },
-
-  { -- You can easily change to a different colorscheme.
-    -- Change the name of the colorscheme plugin below, and then
-    -- change the command in the config to whatever the name of that colorscheme is.
-    --
-    -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    'folke/tokyonight.nvim',
-    priority = 1000, -- Make sure to load this before all the other start plugins.
-    init = function()
-      require('tokyonight').setup {
-        transparent = true,
+  {
+    'catppuccin/nvim',
+    name = 'catppuccin',
+    priority = 1000,
+    config = function()
+      require('catppuccin').setup {
+        flavour = 'mocha',
+        transparent_background = true,
+        integration = {
+          gitsigns = true,
+          treesitter = true,
+          nvimtree = true,
+          mini = {
+            enabled = true,
+            indentscope_color = '',
+          },
+        },
       }
-      -- Load the colorscheme here.
-      -- Like many other themes, this one has different styles, and you could load
-      -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-storm'
-
-      -- You can configure highlights by doing something like:
-      vim.cmd.hi 'Comment gui=none'
+      vim.cmd.colorscheme 'catppuccin'
     end,
   },
-
   -- Highlight todo, notes, etc in comments
-  { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
+  {
+    'folke/todo-comments.nvim',
+    event = 'VimEnter',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    opts = {
+      signs = false,
+      keywords = {
+        DESC = {
+          icon = ' ',
+          color = 'warning',
+        },
+        ROUTE = {
+          icon = ' ',
+          color = 'info',
+        },
+        ACCESS = {
+          icon = ' ',
+          color = 'hint',
+        },
+      },
+    },
+  },
 
   { -- Collection of various small independent plugins/modules
     'echasnovski/mini.nvim',
