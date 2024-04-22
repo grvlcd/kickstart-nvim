@@ -107,6 +107,11 @@ vim.cmd 'set tabstop=4'
 vim.cmd 'set softtabstop=2'
 vim.cmd 'set shiftwidth=2'
 
+-- Wrap things with {}, [], ()
+vim.keymap.set('n', '<leader>bc', 'a{}<Esc>i', { desc = 'Input {C}urly Brackets and step inside' })
+vim.keymap.set('n', '<leader>bs', 'a[]<Esc>i', { desc = 'Input [S]quare Brackets and step inside' })
+vim.keymap.set('n', '<leader>bp', 'a()<Esc>i', { desc = 'Input (P)arenthesis Brackets and step inside' })
+
 -- Move selected line / block of text in visual mode
 vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv", { noremap = true, silent = true })
 vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv", { noremap = true, silent = true })
